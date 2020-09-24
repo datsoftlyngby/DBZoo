@@ -2,11 +2,10 @@ package dbzoo.infrastructure;
 
 import dbzoo.domain.Animal;
 import dbzoo.domain.AnimalRepository;
-import org.apache.ibatis.jdbc.ScriptRunner;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Database implements AnimalRepository {
     // JDBC driver name and database URL
@@ -17,20 +16,24 @@ public class Database implements AnimalRepository {
     private static final String USER = "dbzoo";
 
     // Database version
-    private static final int version = 0;
+    private static final int version = 1;
 
     public Database() throws ClassNotFoundException {
         Class.forName(JDBC_DRIVER);
+        if (getCurrentVersion() != getVersion()) {
+            throw new IllegalStateException("Database in wrong state");
+        }
     }
 
     public Iterable<Animal> findAllAnimals() {
         ArrayList<Animal> animals = new ArrayList<>();
         try (Connection conn = getConnection()) {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id, name, type FROM animals;");
+            ResultSet rs = stmt.executeQuery("SELECT id, name, birthday, type FROM animals;");
             while (rs.next()) {
                 Animal a = new Animal(rs.getInt("id"),
                         rs.getString("name"),
+                        rs.getDate("birthday").toLocalDate(),
                         Animal.AnimalType.values()[rs.getInt("type")]);
                 animals.add(a);
             }
@@ -45,11 +48,12 @@ public class Database implements AnimalRepository {
     public Animal createAnimal(Animal animal) {
         try (Connection conn = getConnection()) {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO animals (name, type) VALUES (?,?);",
+                    "INSERT INTO animals (name, birthday, type) VALUES (?,?,?);",
                     Statement.RETURN_GENERATED_KEYS
             );
             ps.setString(1, animal.getName());
-            ps.setInt(2, animal.getType().ordinal());
+            ps.setDate(2, java.sql.Date.valueOf(animal.getBirthday()));
+            ps.setInt(3, animal.getType().ordinal());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
 

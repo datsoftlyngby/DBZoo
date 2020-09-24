@@ -26,6 +26,7 @@ public class Migrate {
             runMigration(version + 1);
             int new_version = Database.getCurrentVersion();
             if (new_version > version) {
+                version = new_version;
                 System.out.println("Updated database to version: " + new_version);
             } else {
                 throw new RuntimeException("Something went wrong, version not increased: " + new_version);
@@ -42,8 +43,11 @@ public class Migrate {
             throw new FileNotFoundException(migrationFile);
         }
         try(Connection conn = Database.getConnection()) {
+            conn.setAutoCommit(false);
             ScriptRunner runner = new ScriptRunner(conn);
+            runner.setStopOnError(true);
             runner.runScript(new BufferedReader(new InputStreamReader(stream)));
+            conn.commit();
         }
         System.out.println("Done running migration");
     }
