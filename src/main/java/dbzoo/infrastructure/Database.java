@@ -1,6 +1,7 @@
 package dbzoo.infrastructure;
 
 import dbzoo.domain.Animal;
+import dbzoo.domain.AnimalFactory;
 import dbzoo.domain.AnimalRepository;
 
 import java.sql.*;
