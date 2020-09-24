@@ -1,26 +1,17 @@
 package dbzoo.api;
 
-import java.util.ArrayList;
-import java.util.List;
+import dbzoo.domain.animal.Animal;
+import dbzoo.domain.animal.AnimalRepository;
 
 public class DBZoo {
-    private final List<MessageObserver> observers;
+    private final AnimalRepository animals;
 
-    public DBZoo() {
-        this.observers = new ArrayList<MessageObserver>();
+    public DBZoo(AnimalRepository animals) {
+        this.animals = animals;
     }
 
-    public void register(MessageObserver observer) {
-        observers.add(observer);
-    }
 
-    public void sendMessage(String message) {
-        for (MessageObserver mo : observers) {
-            mo.notifyNewMessage(message);
-        }
-    }
-
-    public static interface MessageObserver {
-        void notifyNewMessage(String message);
+    public Iterable<Animal> findAllAnimals() {
+        return animals.findAllAnimals();
     }
 }

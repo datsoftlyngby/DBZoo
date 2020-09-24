@@ -77,7 +77,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>
-                                dbzoo.entries.Server
+                                dbzoo.entries.Cmdline
                             </mainClass>
                         </manifest>
                     </archive>
