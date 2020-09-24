@@ -77,7 +77,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <mainClass>
-                                chadchat.entries.Server
+                                dbzoo.entries.Server
                             </mainClass>
                         </manifest>
                     </archive>

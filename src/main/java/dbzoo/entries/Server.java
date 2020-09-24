@@ -10,10 +10,12 @@ public class Server {
 
     public static void main(String[] args) throws ClassNotFoundException {
         AnimalRepository d = new Database();
-        d.createAnimal(Animal.createAnimal("Young Gray",
+        d.createAnimal(Animal.createAnimal("Peter",
                 LocalDate.of(2020, 10, 2),
                 Animal.AnimalType.ELEPHANT));
-        System.out.println(d.findAllAnimals());
+        for (Animal a : d.findAllAnimals()) {
+            System.out.println(a);
+        }
     }
 
 }
