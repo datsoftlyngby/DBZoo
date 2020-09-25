@@ -17,11 +17,12 @@ public class Database implements AnimalRepository {
     private static final String USER = "dbzoo";
 
     // Database version
-    private static final int version = 2;
+    private static final int version = 3;
 
     public Database() {
         if (getCurrentVersion() != getVersion()) {
-            throw new IllegalStateException("Database in wrong state");
+            throw new IllegalStateException("Database in wrong state, expected:"
+                    + getVersion() + ", got: " + getCurrentVersion());
         }
     }
 
@@ -29,9 +30,8 @@ public class Database implements AnimalRepository {
         ArrayList<Animal> animals = new ArrayList<>();
         try (Connection conn = getConnection()) {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id, name, birthday, last_fed, type FROM animals;");
+            ResultSet rs = stmt.executeQuery("SELECT id, name, birthday, type FROM animals;");
             while (rs.next()) {
-                java.sql.Timestamp time = rs.getTimestamp("last_fed");
                 Animal a = new Animal(rs.getInt("id"),
                         rs.getString("name"),
                         rs.getDate("birthday").toLocalDate()
@@ -43,6 +43,55 @@ public class Database implements AnimalRepository {
             return animals;
         }
         return animals;
+    }
+
+    @Override
+    public AnimalType findTypeOfAnimal(Animal animal) {
+        try (var conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT at.id, at.name, at.required_space " +
+                            "FROM animal_types AS at JOIN animals " +
+                            "ON animals.type=at.id " +
+                            "WHERE animals.id=?;"
+            );
+            ps.setInt(1, animal.getId());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new AnimalType(
+                        rs.getInt("at.id"),
+                        rs.getString("at.name"),
+                        rs.getInt("at.required_space")
+                );
+            } else {
+                throw new IllegalStateException();
+            }
+        } catch (SQLException throwables) {
+            throw new RuntimeException(throwables);
+        }
+    }
+
+    @Override
+    public AnimalType findAnimalType(String name) {
+        try (var conn = getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT at.id, at.name, at.required_space " +
+                            "FROM animal_types AS at " +
+                            "WHERE at.name = ?;"
+            );
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new AnimalType(
+                        rs.getInt("at.id"),
+                        rs.getString("at.name"),
+                        rs.getInt("at.required_space")
+                );
+            } else {
+                throw new IllegalStateException();
+            }
+        } catch (SQLException throwables) {
+            throw new RuntimeException(throwables);
+        }
     }
 
     @Override
