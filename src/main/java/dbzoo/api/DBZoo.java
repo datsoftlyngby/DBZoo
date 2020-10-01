@@ -5,6 +5,7 @@ import dbzoo.domain.animal.AnimalRepository;
 import dbzoo.domain.animal.AnimalType;
 import dbzoo.domain.user.User;
 import dbzoo.domain.user.UserExists;
+import dbzoo.domain.user.UserNotFound;
 import dbzoo.domain.user.UserRepository;
 
 import java.time.LocalDate;
@@ -16,6 +17,10 @@ public class DBZoo {
     public DBZoo(AnimalRepository animals, UserRepository users) {
         this.animals = animals;
         this.users = users;
+    }
+
+    public <T extends AnimalRepository & UserRepository> DBZoo(T db) {
+        this(db, db);
     }
 
     public Iterable<Animal> findAllAnimals() {
@@ -40,13 +45,10 @@ public class DBZoo {
         return users.createUser(name, salt, secret);
     }
 
-    public User login(String name, String password) throws InvalidPassword {
+    public User login(String name, String password) throws UserNotFound, InvalidPassword {
         User user = users.findUser(name);
-        if (user.isPasswordCorrect(password)) {
-            return user;
-        } else  {
-            throw new InvalidPassword();
-        }
+        if (!user.isPasswordCorrect(password)) throw new InvalidPassword();
+        return user;
     }
 
 }

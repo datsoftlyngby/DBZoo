@@ -6,6 +6,7 @@ import dbzoo.domain.animal.Animal;
 import dbzoo.domain.animal.AnimalType;
 import dbzoo.domain.user.User;
 import dbzoo.domain.user.UserExists;
+import dbzoo.domain.user.UserNotFound;
 import dbzoo.infrastructure.Database;
 
 import javax.xml.crypto.Data;
@@ -43,7 +44,7 @@ public class Cmdline {
         try {
             User user = zoo.login(name, password);
             System.out.println("Successfully logged in.");
-        } catch (InvalidPassword invalidPassword) {
+        } catch (InvalidPassword | UserNotFound invalidPassword) {
             System.out.println("Rejected.");
         }
     }
