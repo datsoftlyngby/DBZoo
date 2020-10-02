@@ -27,6 +27,8 @@ public class DBZoo {
         return animals.findAllAnimals();
     }
 
+
+
     public AnimalType findTypeOfAnimal(Animal animal) {
         return animals.findTypeOfAnimal(animal);
     }
