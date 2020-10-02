@@ -19,7 +19,7 @@ public class DBZoo {
         this.users = users;
     }
 
-    public <T extends AnimalRepository & UserRepository> DBZoo(T db) {
+    public DBZoo(ZooRepository db) {
         this(db, db);
     }
 

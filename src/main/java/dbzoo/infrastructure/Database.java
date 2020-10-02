@@ -1,5 +1,6 @@
 package dbzoo.infrastructure;
 
+import dbzoo.api.ZooRepository;
 import dbzoo.domain.animal.Animal;
 import dbzoo.domain.animal.AnimalRepository;
 import dbzoo.domain.animal.AnimalType;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
-public class Database implements AnimalRepository, UserRepository {
+public class Database implements ZooRepository {
     // JDBC driver name and database URL
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String DB_URL = "jdbc:mysql://localhost/dbzoo";
